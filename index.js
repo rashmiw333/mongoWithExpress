@@ -70,7 +70,7 @@ async function hotelsByPhone(phoneNumber){
 app.get("/hotels/directory/:phoneNumber", async(req,res)=>{
     try{
         const hotels = await hotelsByPhone(req.params.phoneNumber)
-        if(hotels.length !=0){
+        if(hotels){
             res.json(hotels)
         }else{
             res.status(404).json({error:"Hotel Not Found."})
@@ -94,7 +94,7 @@ async function hotelsByRating(hotelRating){
 app.get("/hotels/rating/:hotelRating", async(req,res)=>{
         try{
             const hotel = await hotelsByRating(req.params.hotelRating);
-            if(hotel.length !=0){
+            if(hotel){
                 res.json(hotel)
             }else{
                 res.status(400).json({error:"Hotel Not Found"})
@@ -119,7 +119,7 @@ async function hotelsByCategory(hotelCategory){
 app.get("/hotels/category/:hotelCategory", async(req,res)=>{
     try{
         const hotels = await hotelsByCategory(req.params.hotelCategory)
-        if(hotels.length !=0){
+        if(hotels){
             res.json(hotels);
         }else{
             res.status(404).json({error:"Hotel Not Found"})
