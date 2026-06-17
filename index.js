@@ -1,164 +1,136 @@
-const express = require("express")
+const express = require("express");
 const app = express();
 
 const {initializeDatabase} = require("./db/db.connect");
- const Restaurant = require("./models/restaurant.models");
+const Hotel = require("./models/hotel.models");
 
- app.use(express.json());
+app.use(express.json());
 
 initializeDatabase();
 
-//Task 1 and Task2 to add data in db 
-        const newRestaurant = {
-            name: "Yo China",
-            cuisine: ["Chinese", "Italian"],
-            location: "MG Road, Bangalore",
-            rating: 3.9,
-            reviews: [],
-            website: "https://yo-example.com",
-            phoneNumber: "+1288997392",
-            openHours: "Tue-Sun: 10:00 AM - 11:00 PM",
-            priceRange: "$$$ (31-60)",
-            reservationsNeeded: true,
-            isDeliveryAvailable: false,
-            menuUrl: "https://yo-example.com/menu",
-            photos: ["https://example.com/yo-photo1.jpg", "https://example.com/yo-photo2.jpg", "https://example.com/yo-photo3.jpg"]
-};
-
-        async function createRestaurant(newRestaurant){
-            try{
-                const restaurant = new Restaurant(newRestaurant);
-                const saveRestaurant= await restaurant.save();
-                console.log(saveRestaurant,"restaurant Data")
-            }catch(error){
-                throw error;
-            }
-        }
-           
-//  createRestaurant(newRestaurant);
-
-
-async function readAllRestaturantsData(){
-    try{
-        const allRestaurants = await Restaurant.find();
-        return allRestaurants;
-    }catch(error){
-        throw error;
-    }
-}
 //Task1
-app.get("/restuarants", async(req,res)=>{
-    try{
-        const restauarants = await readAllRestaturantsData()
-        if(restauarants.length !=0){
-            res.json(restauarants)
-        }else{
-            res.status(404).json({error:" Restaurant Not Found."})
-        }
-    }catch(error){
-        res.status(500).json({error:"Failed to fetch Restaurants."})
-    }
-})
 
-
-//Task 2
-async function readRestaurantsByname(restaurantName){
+async function readAllHotels(){
     try{
-        const restaurantByName = await Restaurant.find({name:restaurantName});
-        return restaurantByName;
+    const hotels = await Hotel.find();
+      return hotels;
     }catch(error){
         throw error;
     }
 }
 
-app.get("/restaurants/:restaurantName",async(req,res)=>{
+app.get("/hotels", async(req,res)=>{
     try{
-        const restaurant = await readRestaurantsByname(req.params.restaurantName);
-        if(restaurant){
-            res.json(restaurant);
-        }else{
-            res.status(404).json({error:"Restaurant Not Found"});
-        }
+  const hotels = await readAllHotels();
+  if(hotels){
+    res.json(hotels);
+  }else{
+    res.status(400).json({error:"Hotel Not Found."})
+  }
     }catch(error){
-        res.status(500).json({error:"Failed to fetch restaurants"})
+    res.status(500).json({error:"Error Ocurred while Fetching Data"})
     }
 })
 
-//Task 3: function to read phoneNumber
+//Task2
 
-async function restaurantWithPhoneNumber(phoneNum){
-    try{    
-        const restaurantWithPhoneNum = await Restaurant.findOne({phoneNumber:phoneNum});
-        return restaurantWithPhoneNum;
+async function readHotelByName(hotelName){
+    try{
+        const hotels = await Hotel.findOne({name:hotelName});
+        return hotels;
     }catch(error){
         throw error;
     }
 }
 
-app.get("/restaurants/directory/:phoneNumber",async(req,res)=>{
+app.get("/hotels/:hotelName", async(req,res)=>{
     try{
-        const restaurant = await restaurantWithPhoneNumber(req.params.phoneNumber);
-        if(restaurant.length !=0){
-            res.json(restaurant)
+        const hotel = await readHotelByName(req.params.hotelName)
+        if(hotel){
+            res.json(hotel);
         }else{
-            res.status(404).json({error:" Restaurant not Found"});
+        res.status(404).json({error:"Hotel Not Found"});
         }
-
     }catch(error){
-        res.status(500).json({error:"Error caused while fetching error"})
+        res.status(500).json({error:"Error Occurred While loading Data"})
     }
 })
 
-//Task 4: Read all restaurants by uisine ("Italian").
+//Task 3
 
-async function restaurantsWithCuisine(cuisineName){
+async function hotelsByPhone(phoneNumber){
     try{
-        const restaurants = await Restaurant.find({cuisine:cuisineName})
-        return restaurants;
+        const hotels = await Hotel.findOne({phoneNumber});
+        return hotels;
     }catch(error){
         throw error;
     }
 }
 
-app.get("/restaurants/cuisine/:cuisineName",async(req,res)=>{
+app.get("/hotels/directory/:phoneNumber", async(req,res)=>{
+    try{
+        const hotels = await hotelsByPhone(req.params.phoneNumber)
+        if(hotels.length !=0){
+            res.json(hotels)
+        }else{
+            res.status(404).json({error:"Hotel Not Found."})
+        }
+    }catch(error){
+        res.status(500).json({error:"Error Occurred While Fetching Data"})
+    }
+})
+
+//Task 4
+
+async function hotelsByRating(hotelRating){
+    try{
+        const hotels = await Hotel.find({rating:hotelRating});
+        return hotels;
+    }catch(error){
+        throw error;
+    }
+}
+
+app.get("/hotels/rating/:hotelRating", async(req,res)=>{
         try{
-    const restaurants = await restaurantsWithCuisine(req.params.cuisineName);
-    if(restaurants.length !=0){
-        res.json(restaurants)
-    }else{
-        res.status(404).json({error:"Restaurant Not Found."})
-    }
-   }catch(error){
-        res.status(500).json({error:"Error Occured while Fetching Data"});
-   }
+            const hotel = await hotelsByRating(req.params.hotelRating);
+            if(hotel.length !=0){
+                res.json(hotel)
+            }else{
+                res.status(400).json({error:"Hotel Not Found"})
+            }
+        }catch(error){
+            res.status(500).json({error:"Error Occurred while fetching Data"})
+        }
 })
 
-//Task5
-async function readRestaurantsWithLocation(restaurantLocation){
-    try{
-    const restaurants = await Restaurant.find({location:restaurantLocation});
-     return restaurants;
-    }catch(error){
-        throw error;
-    }
+
+//Task5:
+
+async function hotelsByCategory(hotelCategory){
+        try{
+            const hotelsByCategory = await Hotel.find({category:hotelCategory});
+            return hotelsByCategory;
+        }catch(error){
+            throw error;
+        }
 }
 
-app.get("/restaurants/location/:restaurantLocation", async(req,res)=>{
+app.get("/hotels/category/:hotelCategory", async(req,res)=>{
     try{
-        const restaurant = await readRestaurantsWithLocation(req.params.restaurantLocation)
-        if(restaurant.length !=0){
-            res.json(restaurant);
+        const hotels = await hotelsByCategory(req.params.hotelCategory)
+        if(hotels.length !=0){
+            res.json(hotels);
         }else{
-            res.status(404).json({error:"Restaurant Not Found."});
+            res.status(404).json({error:"Hotel Not Found"})
         }
     }catch(error){
-        res.status(500).json({error:"Error Occurred while fetching Data"});
+        res.status(500).json({error:"Error Occurred While Fetching Data"});
     }
 })
 
 
-
-const PORT = 3000
+const PORT= 3000;
 app.listen(PORT,()=>{
-    console.log(`Server running on ${PORT}`);
+    console.log(`Server Started on ${PORT}`);
 })
