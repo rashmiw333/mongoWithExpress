@@ -8,6 +8,27 @@ app.use(express.json());
 
 initializeDatabase();
 
+async function createHotel(newHotel){
+    try{
+        const hotel = new Hotel(newHotel);
+        const saveHotel = await hotel.save();
+        return saveHotel;
+    }catch(error){
+        throw error;
+    }
+
+}
+
+//post call
+app.post("/hotels", async(req,res)=>{
+    try{
+        const hotelSaved = await createHotel(req.body);
+        res.status(201).json({message:"Hotel added Successfully.",hotel:hotelSaved});
+    }catch(error){
+        res.status(500).json({error:"Failed to add hotel."})
+    }
+})
+
 //Task1
 
 async function readAllHotels(){
