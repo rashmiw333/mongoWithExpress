@@ -8,32 +8,16 @@ const {initializeDatabase} = require("./db/db.connect");
 
 initializeDatabase();
 
-//Task 1 and Task2 to add data in db 
-        const newRestaurant = {
-            name: "Yo China",
-            cuisine: ["Chinese", "Italian"],
-            location: "MG Road, Bangalore",
-            rating: 3.9,
-            reviews: [],
-            website: "https://yo-example.com",
-            phoneNumber: "+1288997392",
-            openHours: "Tue-Sun: 10:00 AM - 11:00 PM",
-            priceRange: "$$$ (31-60)",
-            reservationsNeeded: true,
-            isDeliveryAvailable: false,
-            menuUrl: "https://yo-example.com/menu",
-            photos: ["https://example.com/yo-photo1.jpg", "https://example.com/yo-photo2.jpg", "https://example.com/yo-photo3.jpg"]
-};
 
-        async function createRestaurant(newRestaurant){
-            try{
-                const restaurant = new Restaurant(newRestaurant);
-                const saveRestaurant= await restaurant.save();
-                return saveRestaurant;
-            }catch(error){
-                throw error;
-            }
-        }
+
+async function createRestaurant(newRestaurant){
+    try{
+        const restaurant = new Restaurant(newRestaurant);
+        const saveRestaurant= await restaurant.save();
+        return saveRestaurant;
+        }catch(error){
+            throw error;
+}
            
 
 //post call
