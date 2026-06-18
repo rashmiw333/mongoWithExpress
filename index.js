@@ -29,14 +29,23 @@ initializeDatabase();
             try{
                 const restaurant = new Restaurant(newRestaurant);
                 const saveRestaurant= await restaurant.save();
-                console.log(saveRestaurant,"restaurant Data")
+                return saveRestaurant;
             }catch(error){
                 throw error;
             }
         }
            
-//  createRestaurant(newRestaurant);
 
+//post call
+
+app.post("/restaurants", async(req,res)=>{
+    try{
+    const restaurantSaved = await createRestaurant(req.body);
+       res.status(201).json({message:"Restaurant added Successfully.",restauarant:restaurantSaved})
+    }catch(error){
+        res.status(500).json({error:"Failed to add Restaaurant"});
+    }
+})
 
 async function readAllRestaturantsData(){
     try{
