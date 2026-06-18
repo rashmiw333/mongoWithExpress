@@ -9,7 +9,6 @@ const {initializeDatabase} = require("./db/db.connect");
 initializeDatabase();
 
 
-
 async function createRestaurant(newRestaurant){
     try{
         const restaurant = new Restaurant(newRestaurant);
@@ -18,7 +17,7 @@ async function createRestaurant(newRestaurant){
         }catch(error){
             throw error;
 }
-           
+}        
 
 //post call
 
