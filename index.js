@@ -7,33 +7,26 @@ const {initializeDatabase} = require("./db/db.connect");
 
 initializeDatabase();
 
-        const newMovie = {
-                title: "New Movie",
-                releaseYear: 2023,
-                genre: ["Drama"],
-                director: "Aditya Roy Chopra",
-                actors: ["Actor1","Actor2"],
-                language: "Hindi",
-                country: "India",
-                rating: 6.1,
-                plot: "A young Man and Young Woman fall in love on a trip",
-                awards: "IFA Filmfare Awards",
-                posterUrl: "https://example.com/new-poster1.jpg",
-                trailerUrl: "https://example.com/new-trailer1.mp4",
-
-        };
 
         async function createMovie(newMovie){
             try{
                 const movie = new Movie(newMovie);
                 const saveMovie = await movie.save();
-                console.log(saveMovie,"movie Data")
+                return saveMovie;
             }catch(error){
                 throw error;
             }
         }
+//post call to add movie
+        app.post("/movies",async(req,res)=>{
+            try{
+                const savedMovie = await createMovie(req.body);
+                res.status(201).json({message: "Movie added successfully.",movie:savedMovie})
+            }catch(error){
+                res.status(500).json({error:"Failed to add Movie"});
+            }
+        })
            
- //createMovie(newMovie);
 
  //find movie with titile
 
