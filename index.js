@@ -164,6 +164,8 @@ app.delete("/restaurant/:restaurantId",async(req,res)=>{
         const deletedRestaurant = await deleteRestaurant(req.params.restaurantId);
         if(deletedRestaurant){
         res.status(200).json({message:"Restaurant deleted Successfully."});
+        }else{
+        res.status(404).json({error:"Restaurant not found"});
         }
     }catch(error){
         res.status(500).json({error:"Error while deleting Restaurant"});
