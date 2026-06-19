@@ -139,7 +139,7 @@ async function deleteMovie(movieId){
 app.delete("/movies/:movieId", async(req,res)=>{
     try{
         const deletedMovie = await deleteMovie(req.params.movieId);
-        res.status(201).json({message:"Movie deleted Successfully."})
+        res.status(200).json({message:"Movie deleted Successfully."})
     }catch(error){
         res.status(500).json({error:"Failed to delete Movie"})
     }
