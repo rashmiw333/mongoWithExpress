@@ -150,6 +150,24 @@ app.get("/hotels/category/:hotelCategory", async(req,res)=>{
     }
 })
 
+//Delete function and API
+async function deleteHotel(hotelId){
+    try{
+        const deletedHotel = await Hotel.findByIdAndDelete(hotelId);
+        return deleteHotel;
+    }catch(error){
+        console.log(error);
+    }
+}
+
+app.delete("/hotels/:hotelId",async(req,res)=>{
+    try{
+        const deletedHotel = await deleteHotel(req.params.hotelId)
+        res.status(200).json({message:"Hotel deleted Successfully."})
+    }catch(error){
+        res.status(500).json({error:"Failed to delete Hotel"})
+    }
+})
 
 const PORT= 3000;
 app.listen(PORT,()=>{
