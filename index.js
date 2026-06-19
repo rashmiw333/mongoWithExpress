@@ -125,6 +125,26 @@ app.get("/movies/genre/:genreName",async(req,res)=>{
         res.status(500).json({error:"failed to fetch movies"});
     }
 })
+
+//Delete function amd API
+async function deleteMovie(movieId){
+    try{
+        const deletedMovie = await Movie.findByIdAndDelete(movieId)
+        return deletedMovie;
+    }catch(error){
+        console.log(error);
+    }
+}
+
+app.delete("/movies/:movieId", async(req,res)=>{
+    try{
+        const deletedMovie = await deleteMovie(req.params.movieId);
+        res.status(201).json({message:"Movie deleted Successfully."})
+    }catch(error){
+        res.status(500).json({error:"Failed to delete Movie"})
+    }
+});
+
  const PORT = 3000
  app.listen(PORT,()=>{
     console.log(`Server is running on ${PORT}`);
