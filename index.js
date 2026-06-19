@@ -172,6 +172,31 @@ app.delete("/restaurant/:restaurantId",async(req,res)=>{
     }
 });
 
+// Create an API to update a restaurant data by their ID in the Database.
+//  Update the cuisine of an existing restaurant. Test your API with Postman.
+
+
+async function updateRestaurant(restaurantId,dataToUpdate){
+    try{
+        const updateRestaurant = await Restaurant.findByIdAndUpdate(restaurantId,dataToUpdate,{new:true});
+        return updateRestaurant;
+    }catch(error){
+        console.log("Error Occurred While updating Restaurant",error);
+    }
+}
+
+app.post("/restaurant/:restaurantId",async(req,res)=>{
+    try{
+        const updatedRestaurant = await updateRestaurant(req.params.restaurantId,req.body);
+         if(updatedRestaurant){
+            res.status(201).json({message:"Restaurant updated Successfully."});
+         }else{
+            res.status(404).json({error:"Restaurant not Found."})
+         }
+    }catch(error){
+        console.log("Error Occurred while updating Restaurant",error);
+    }
+})
 
 const PORT = 3000
 app.listen(PORT,()=>{
