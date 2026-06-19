@@ -174,6 +174,31 @@ app.delete("/hotels/:hotelId",async(req,res)=>{
     }
 })
 
+// Create an API to update a hotel data by their ID in the Database.
+//  Update the rating of an existing hotel. Test your API with Postman.
+
+async function updateHotel(hotelId,dataToUpdate){
+    try{
+        const updatedHotel = await Hotel.findByIdAndUpdate(hotelId,dataToUpdate,{new:true});
+        return updatedHotel;
+    }catch(error){
+        console.log("Error Occurred while updating Hotel");
+    }
+}
+
+app.post("/hotels/:hotelId",async(req,res)=>{
+    try{
+        const updatedHotel = await updateHotel(req.params.hotelId,req.body);
+        if(updatedHotel){
+            res.status(200).json({message:"Hotel updated Successfully."})
+        }else{
+            res.status(404).json({error:"Hotel not Found."});
+        }
+    }catch(error){
+        res.status(500).json({error:"Failed to update hotel."})
+    }
+})
+
 const PORT= 3000;
 app.listen(PORT,()=>{
     console.log(`Server Started on ${PORT}`);
