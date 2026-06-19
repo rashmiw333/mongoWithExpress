@@ -148,6 +148,27 @@ app.get("/restaurants/location/:restaurantLocation", async(req,res)=>{
     }
 })
 
+// delete restaurant and api
+
+async function deleteRestaurant(restaurantId){
+    try{
+        const deletedRestaurant = await Restaurant.findByIdAndDelete(restaurantId);
+        return deletedRestaurant;
+    }catch(error){
+        console.log(error);
+    }
+}
+
+app.delete("/restaurant/:restaurantId",async(req,res)=>{
+    try{
+        const deletedRestaurant = await deleteRestaurant(req.params.restaurantId);
+        if(deletedRestaurant){
+        res.status(200).json({message:"Restaurant deleted Successfully."});
+        }
+    }catch(error){
+        res.status(500).json({error:"Error while deleting Restaurant"});
+    }
+});
 
 
 const PORT = 3000
