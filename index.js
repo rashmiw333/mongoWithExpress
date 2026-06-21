@@ -2,17 +2,17 @@ const express = require("express");
 const app = express();
 
 const {initializeDatabase} = require("./db/db.connect");
-const Hotel = require("./models/hotel.models");
+const Book = require("./models/book.models");
 
 app.use(express.json());
 
 initializeDatabase();
 
-async function createHotel(newHotel){
+async function createBook(newBook){
     try{
-        const hotel = new Hotel(newHotel);
-        const saveHotel = await hotel.save();
-        return saveHotel;
+        const book = new Book(newBook);
+        const saveBook = await book.save();
+        return saveBook;
     }catch(error){
         throw error;
     }
@@ -20,184 +20,87 @@ async function createHotel(newHotel){
 }
 
 //post call
-app.post("/hotels", async(req,res)=>{
+app.post("/books", async(req,res)=>{
     try{
-        const hotelSaved = await createHotel(req.body);
-        res.status(201).json({message:"Hotel added Successfully.",hotel:hotelSaved});
+        const bookSaved = await createBook(req.body);
+        res.status(201).json({message:"Book added Successfully.",book:bookSaved});
     }catch(error){
-        res.status(500).json({error:"Failed to add hotel."})
+        res.status(500).json({error:"Failed to add book."})
     }
 })
 
-//Task1
+//Task3
 
-async function readAllHotels(){
+async function readAllBooks(){
     try{
-    const hotels = await Hotel.find();
-      return hotels;
+    const books = await Book.find();
+      return books;
     }catch(error){
         throw error;
     }
 }
 
-app.get("/hotels", async(req,res)=>{
+app.get("/books", async(req,res)=>{
     try{
-  const hotels = await readAllHotels();
-  if(hotels.length !=0){
-    res.json(hotels);
+  const books = await readAllBooks();
+  if(books.length !=0){
+    res.json(books);
   }else{
-    res.status(400).json({error:"Hotel Not Found."})
+    res.status(400).json({error:"Book Not Found."})
   }
     }catch(error){
     res.status(500).json({error:"Error Ocurred while Fetching Data"})
     }
 })
 
-//Task2
+//Task4 Create an API to get a book's detail by its title. Make sure to do error handling.
 
-async function readHotelByName(hotelName){
+async function readBookByTitle(bookName){
     try{
-        const hotels = await Hotel.findOne({name:hotelName});
-        return hotels;
+        const book = await Book.findOne({title:bookName});
+        return book;
     }catch(error){
         throw error;
     }
 }
 
-app.get("/hotels/:hotelName", async(req,res)=>{
+app.get("/books/:bookTitle", async(req,res)=>{
     try{
-        const hotel = await readHotelByName(req.params.hotelName)
-        if(hotel){
-            res.json(hotel);
+        const book = await readBookByTitle(req.params.bookTitle)
+        if(book){
+            res.json(book);
         }else{
-        res.status(404).json({error:"Hotel Not Found"});
+        res.status(404).json({error:"Book Not Found"});
         }
     }catch(error){
         res.status(500).json({error:"Error Occurred While loading Data"})
     }
 })
 
-//Task 3
+//Task 5
 
-async function hotelsByPhone(phoneNumber){
+async function booksByAuthor(authorName){
     try{
-        const hotels = await Hotel.findOne({phoneNumber});
-        return hotels;
+        const books = await Book.find({author:authorName});
+        return books;
     }catch(error){
         throw error;
     }
 }
 
-app.get("/hotels/directory/:phoneNumber", async(req,res)=>{
+app.get("/books/directory/:author", async(req,res)=>{
     try{
-        const hotels = await hotelsByPhone(req.params.phoneNumber)
-        if(hotels){
-            res.json(hotels)
+        const books = await booksByAuthor(req.params.author)
+        if(books.length !=0){
+            res.json(books)
         }else{
-            res.status(404).json({error:"Hotel Not Found."})
+            res.status(404).json({error:"Book Not Found."})
         }
     }catch(error){
         res.status(500).json({error:"Error Occurred While Fetching Data"})
     }
 })
 
-//Task 4
-
-async function hotelsByRating(hotelRating){
-    try{
-        const hotels = await Hotel.find({rating:hotelRating});
-        return hotels;
-    }catch(error){
-        throw error;
-    }
-}
-
-app.get("/hotels/rating/:hotelRating", async(req,res)=>{
-        try{
-            const hotel = await hotelsByRating(req.params.hotelRating);
-            if(hotel.length !=0){
-                res.json(hotel)
-            }else{
-                res.status(400).json({error:"Hotel Not Found"})
-            }
-        }catch(error){
-            res.status(500).json({error:"Error Occurred while fetching Data"})
-        }
-})
-
-
-//Task5:
-
-async function hotelsByCategory(hotelCategory){
-        try{
-            const hotelsByCategory = await Hotel.find({category:hotelCategory});
-            return hotelsByCategory;
-        }catch(error){
-            throw error;
-        }
-}
-
-app.get("/hotels/category/:hotelCategory", async(req,res)=>{
-    try{
-        const hotels = await hotelsByCategory(req.params.hotelCategory)
-        if(hotels.length !=0){
-            res.json(hotels);
-        }else{
-            res.status(404).json({error:"Hotel Not Found"})
-        }
-    }catch(error){
-        res.status(500).json({error:"Error Occurred While Fetching Data"});
-    }
-})
-
-//Delete function and API
-async function deleteHotel(hotelId){
-    try{
-        const deletedHotel = await Hotel.findByIdAndDelete(hotelId);
-        return deleteHotel;
-    }catch(error){
-        console.log(error);
-    }
-}
-
-app.delete("/hotels/:hotelId",async(req,res)=>{
-    try{
-        const deletedHotel = await deleteHotel(req.params.hotelId)
-        if(deletedHotel){
-         res.status(200).json({message:"Hotel deleted Successfully."})
-        }else{
-        res.status(404).json({error:"Hotel not Found"});
-        }
-       
-    }catch(error){
-        res.status(500).json({error:"Failed to delete Hotel"})
-    }
-})
-
-// Create an API to update a hotel data by their ID in the Database.
-//  Update the rating of an existing hotel. Test your API with Postman.
-
-async function updateHotel(hotelId,dataToUpdate){
-    try{
-        const updatedHotel = await Hotel.findByIdAndUpdate(hotelId,dataToUpdate,{new:true});
-        return updatedHotel;
-    }catch(error){
-        console.log("Error Occurred while updating Hotel");
-    }
-}
-
-app.post("/hotels/:hotelId",async(req,res)=>{
-    try{
-        const updatedHotel = await updateHotel(req.params.hotelId,req.body);
-        if(updatedHotel){
-            res.status(200).json({message:"Hotel updated Successfully."})
-        }else{
-            res.status(404).json({error:"Hotel not Found."});
-        }
-    }catch(error){
-        res.status(500).json({error:"Failed to update hotel."})
-    }
-})
 
 const PORT= 3000;
 app.listen(PORT,()=>{
