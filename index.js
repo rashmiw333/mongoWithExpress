@@ -101,6 +101,126 @@ app.get("/books/directory/:author", async(req,res)=>{
     }
 })
 
+//Task 6
+
+async function booksByGenre(genre){
+    try{
+        const books = await Book.find({genre});
+        return books;
+    }catch(error){
+        throw error;
+    }
+}
+
+app.get("/books/genres/:genre", async(req,res)=>{
+    try{
+        const books = await booksByGenre(req.params.genre)
+        if(books.length !=0){
+            res.json(books)
+        }else{
+            res.status(404).json({error:"Book Not Found."})
+        }
+    }catch(error){
+        res.status(500).json({error:"Error Occurred While Fetching Data"})
+    }
+})
+
+// 7. Create an API to get all the books which was released in the year 2012.
+async function booksByReleaseYear(year){
+    try{
+        const books = await Book.find({publishedYear:year});
+        return books;
+    }catch(error){
+        throw error;
+    }
+}
+
+app.get("/books/publishedYear/:year", async(req,res)=>{
+    try{
+        const books = await booksByReleaseYear(req.params.year)
+        if(books.length !=0){
+            res.json(books)
+        }else{
+            res.status(404).json({error:"Book Not Found."})
+        }
+    }catch(error){
+        res.status(500).json({error:"Error Occurred While Fetching Data"})
+    }
+})
+
+//Task 8 
+
+async function updateBook(bookId,dataToUpdate){
+    try{
+        const updatedBook = await Book.findByIdAndUpdate(bookId,dataToUpdate,{new:true});
+        return updatedBook;
+    }catch(error){
+        console.log("Error Occurred while updating Book");
+    }
+}
+
+app.post("/books/:bookId",async(req,res)=>{
+    try{
+        const updatedBook = await updateBook(req.params.bookId,req.body);
+        if(updatedBook){
+            res.status(200).json({message:"Book updated Successfully."})
+        }else{
+            res.status(404).json({error:"Book does not exist."});
+        }
+    }catch(error){
+        res.status(500).json({error:"Failed to update book."})
+    }
+})
+
+//Task9
+
+async function updateBookByTitle(bookTitle,dataToUpdate){
+    try{
+        const updatedBook = await Book.findOneAndUpdate({title:bookTitle},dataToUpdate,{new:true});
+        return updatedBook;
+    }catch(error){
+        console.log("Error Occurred while updating Book");
+    }
+}
+
+app.post("/books/booksByTitle/:bookTitle",async(req,res)=>{
+    try{
+        const updatedBook = await updateBookByTitle(req.params.bookTitle,req.body);
+        if(updatedBook.length!=0){
+            res.status(200).json({message:"Book updated Successfully."})
+        }else{
+            res.status(404).json({error:"Book does not exist."});
+        }
+    }catch(error){
+        res.status(500).json({error:"Failed to update book."})
+    }
+})
+
+//Task 10
+
+//Delete function and API
+async function deleteBook(bookId){
+    try{
+        const deletedBook = await Book.findByIdAndDelete(bookId);
+        return deletedBook;
+    }catch(error){
+        console.log(error);
+    }
+}
+
+app.delete("/books/:bookId",async(req,res)=>{
+    try{
+        const deletedBook = await deleteBook(req.params.bookId)
+        if(deletedBook){
+         res.status(200).json({message:"Book deleted Successfully."})
+        }else{
+        res.status(404).json({error:"Book not Found"});
+        }
+       
+    }catch(error){
+        res.status(500).json({error:"Failed to delete Book"})
+    }
+})
 
 const PORT= 3000;
 app.listen(PORT,()=>{
