@@ -2,17 +2,18 @@ const express = require("express");
 const app = express();
 
 const {initializeDatabase} = require("./db/db.connect");
-const Book = require("./models/book.models");
+const Receipe = require("./models/receipe.models");
 
 app.use(express.json());
 
 initializeDatabase();
 
-async function createBook(newBook){
+//Task3,Task4,Task5
+async function createReceipe(newReceipe){
     try{
-        const book = new Book(newBook);
-        const saveBook = await book.save();
-        return saveBook;
+        const receipe = new Receipe(newReceipe);
+        const saveReceipe = await receipe.save();
+        return saveReceipe;
     }catch(error){
         throw error;
     }
@@ -20,205 +21,183 @@ async function createBook(newBook){
 }
 
 //post call
-app.post("/books", async(req,res)=>{
+app.post("/receipes", async(req,res)=>{
     try{
-        const bookSaved = await createBook(req.body);
-        res.status(201).json({message:"Book added Successfully.",book:bookSaved});
+        const receipeSaved = await createReceipe(req.body);
+        res.status(201).json({message:"Reciepe added Successfully.",receipe:receipeSaved});
     }catch(error){
-        res.status(500).json({error:"Failed to add book."})
+        res.status(500).json({error:"Failed to add Receipe."})
     }
 })
 
-//Task3
+//Task6 
 
-async function readAllBooks(){
+async function readAllReceipes(){
     try{
-    const books = await Book.find();
-      return books;
+    const receipes = await Receipe.find();
+      return receipes;
     }catch(error){
         throw error;
     }
 }
 
-app.get("/books", async(req,res)=>{
+//Task6
+app.get("/receipes", async(req,res)=>{
     try{
-  const books = await readAllBooks();
-  if(books.length !=0){
-    res.json(books);
+  const receipe = await readAllReceipes();
+  if(receipe.length !=0){
+    res.json(receipe);
   }else{
-    res.status(400).json({error:"Book Not Found."})
+    res.status(400).json({error:"Receipe Not Found."})
   }
     }catch(error){
     res.status(500).json({error:"Error Ocurred while Fetching Data"})
     }
 })
 
-//Task4 Create an API to get a book's detail by its title. Make sure to do error handling.
+//Task 7
 
-async function readBookByTitle(bookName){
+async function readReceipeByTitle(receipeName){
     try{
-        const book = await Book.findOne({title:bookName});
-        return book;
+        const recipes = await Receipe.findOne({title:receipeName});
+        return recipes;
     }catch(error){
         throw error;
     }
 }
 
-app.get("/books/:bookTitle", async(req,res)=>{
+app.get("/reciepes/:recipeTitle", async(req,res)=>{
     try{
-        const book = await readBookByTitle(req.params.bookTitle)
-        if(book){
-            res.json(book);
+        const recipe = await readReceipeByTitle(req.params.recipeTitle)
+        if(recipe){
+            res.json(recipe);
         }else{
-        res.status(404).json({error:"Book Not Found"});
+        res.status(404).json({error:"Receipe Not Found"});
         }
     }catch(error){
         res.status(500).json({error:"Error Occurred While loading Data"})
     }
 })
 
-//Task 5
+//Task 8
 
-async function booksByAuthor(authorName){
+async function receipesByAuthor(authorName){
     try{
-        const books = await Book.find({author:authorName});
-        return books;
+        const receipes = await Receipe.find({author:authorName});
+        return receipes;
     }catch(error){
         throw error;
     }
 }
 
-app.get("/books/directory/:author", async(req,res)=>{
+app.get("/reciepes/directory/:author", async(req,res)=>{
     try{
-        const books = await booksByAuthor(req.params.author)
-        if(books.length !=0){
-            res.json(books)
+        const receipe = await receipesByAuthor(req.params.author)
+        if(receipe.length !=0){
+            res.json(receipe)
         }else{
-            res.status(404).json({error:"Book Not Found."})
+            res.status(404).json({error:"Receipe Not Found."})
         }
     }catch(error){
         res.status(500).json({error:"Error Occurred While Fetching Data"})
     }
 })
 
-//Task 6
+//Task 9
 
-async function booksByGenre(genre){
+async function recipesByLevel(difficultyLevel){
     try{
-        const books = await Book.find({genre});
-        return books;
+        const recipes = await Receipe.find({difficulty:difficultyLevel});
+        return recipes;
     }catch(error){
         throw error;
     }
 }
 
-app.get("/books/genres/:genre", async(req,res)=>{
+app.get("/reciepes/level/:level", async(req,res)=>{
     try{
-        const books = await booksByGenre(req.params.genre)
-        if(books.length !=0){
-            res.json(books)
+        const recipes = await recipesByLevel(req.params.level)
+        if(recipes.length !=0){
+            res.json(recipes)
         }else{
-            res.status(404).json({error:"Book Not Found."})
+            res.status(404).json({error:"Receipe Not Found."})
         }
     }catch(error){
         res.status(500).json({error:"Error Occurred While Fetching Data"})
-    }
-})
-
-// 7. Create an API to get all the books which was released in the year 2012.
-async function booksByReleaseYear(year){
-    try{
-        const books = await Book.find({publishedYear:year});
-        return books;
-    }catch(error){
-        throw error;
-    }
-}
-
-app.get("/books/publishedYear/:year", async(req,res)=>{
-    try{
-        const books = await booksByReleaseYear(req.params.year)
-        if(books.length !=0){
-            res.json(books)
-        }else{
-            res.status(404).json({error:"Book Not Found."})
-        }
-    }catch(error){
-        res.status(500).json({error:"Error Occurred While Fetching Data"})
-    }
-})
-
-//Task 8 
-
-async function updateBook(bookId,dataToUpdate){
-    try{
-        const updatedBook = await Book.findByIdAndUpdate(bookId,dataToUpdate,{new:true});
-        return updatedBook;
-    }catch(error){
-        console.log("Error Occurred while updating Book");
-    }
-}
-
-app.post("/books/:bookId",async(req,res)=>{
-    try{
-        const updatedBook = await updateBook(req.params.bookId,req.body);
-        if(updatedBook){
-            res.status(200).json({message:"Book updated Successfully."})
-        }else{
-            res.status(404).json({error:"Book does not exist."});
-        }
-    }catch(error){
-        res.status(500).json({error:"Failed to update book."})
-    }
-})
-
-//Task9
-
-async function updateBookByTitle(bookTitle,dataToUpdate){
-    try{
-        const updatedBook = await Book.findOneAndUpdate({title:bookTitle},dataToUpdate,{new:true});
-        return updatedBook;
-    }catch(error){
-        console.log("Error Occurred while updating Book");
-    }
-}
-
-app.post("/books/booksByTitle/:bookTitle",async(req,res)=>{
-    try{
-        const updatedBook = await updateBookByTitle(req.params.bookTitle,req.body);
-        if(updatedBook.length!=0){
-            res.status(200).json({message:"Book updated Successfully."})
-        }else{
-            res.status(404).json({error:"Book does not exist."});
-        }
-    }catch(error){
-        res.status(500).json({error:"Failed to update book."})
     }
 })
 
 //Task 10
 
-//Delete function and API
-async function deleteBook(bookId){
+async function updateReceipe(receipeId,dataToUpdate){
     try{
-        const deletedBook = await Book.findByIdAndDelete(bookId);
-        return deletedBook;
+        const updatedReceipe = await Receipe.findByIdAndUpdate(receipeId,dataToUpdate,{new:true});
+        return updatedReceipe;
+    }catch(error){
+        console.log("Error Occurred while updating Receipe");
+    }
+}
+
+app.post("/recipes/:receipeId",async(req,res)=>{
+    try{
+        const updatedReceipe = await updateReceipe(req.params.receipeId,req.body);
+        if(updatedReceipe){
+            res.status(200).json({message:"Receipe updated Successfully."})
+        }else{
+            res.status(404).json({error:"Receipe does not exist."});
+        }
+    }catch(error){
+        res.status(500).json({error:"Failed to update Reipe."})
+    }
+})
+
+//Task 11 
+
+async function updateReceipeByTitle(receipeTitle,dataToUpdate){
+    try{
+        const updatedReceipe = await Receipe.findOneAndUpdate({title:receipeTitle},dataToUpdate,{new:true});
+        return updatedReceipe;
+    }catch(error){
+        console.log("Error Occurred while updating Receipe");
+    }
+}
+
+app.post("/receipes/receipesByTitle/:receipeTitle",async(req,res)=>{
+    try{
+        const updatedReceipe = await updateReceipeByTitle(req.params.receipeTitle,req.body);
+        if(updatedReceipe.length!=0){
+            res.status(200).json({message:"Receipe updated Successfully."})
+        }else{
+            res.status(404).json({error:"Receipe does not exist."});
+        }
+    }catch(error){
+        res.status(500).json({error:"Failed to update Receipe."})
+    }
+})
+
+//Task 12
+
+//Delete function and API
+async function deleteReceipe(reciepeId){
+    try{
+        const deletedReceipe = await Receipe.findByIdAndDelete(reciepeId);
+        return deletedReceipe;
     }catch(error){
         console.log(error);
     }
 }
 
-app.delete("/books/:bookId",async(req,res)=>{
+app.delete("/receipes/:recipeId",async(req,res)=>{
     try{
-        const deletedBook = await deleteBook(req.params.bookId)
-        if(deletedBook){
-         res.status(200).json({message:"Book deleted Successfully."})
+        const deletedReceipe = await deleteReceipe(req.params.recipeId)
+        if(deletedReceipe){
+         res.status(200).json({message:"Receipe deleted Successfully."})
         }else{
-        res.status(404).json({error:"Book not Found"});
+        res.status(404).json({error:"Receipe not Found"});
         }
        
     }catch(error){
-        res.status(500).json({error:"Failed to delete Book"})
+        res.status(500).json({error:"Failed to delete Receipe"})
     }
 })
 
