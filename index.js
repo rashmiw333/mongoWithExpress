@@ -186,7 +186,7 @@ async function updateBookByTitle(bookTitle,dataToUpdate){
 app.post("/books/booksByTitle/:bookTitle",async(req,res)=>{
     try{
         const updatedBook = await updateBookByTitle(req.params.bookTitle,req.body);
-        if(updatedBook.length!=0){
+        if(updatedBook){
             res.status(200).json({message:"Book updated Successfully."})
         }else{
             res.status(404).json({error:"Book does not exist."});
