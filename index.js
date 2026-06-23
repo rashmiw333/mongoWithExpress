@@ -21,7 +21,7 @@ async function createReceipe(newReceipe){
 }
 
 //post call
-app.post("/receipes", async(req,res)=>{
+app.post("/recipes", async(req,res)=>{
     try{
         const receipeSaved = await createReceipe(req.body);
         res.status(201).json({message:"Reciepe added Successfully.",receipe:receipeSaved});
@@ -42,7 +42,7 @@ async function readAllReceipes(){
 }
 
 //Task6
-app.get("/receipes", async(req,res)=>{
+app.get("/recipes", async(req,res)=>{
     try{
   const receipe = await readAllReceipes();
   if(receipe.length !=0){
@@ -66,7 +66,7 @@ async function readReceipeByTitle(receipeName){
     }
 }
 
-app.get("/reciepes/:recipeTitle", async(req,res)=>{
+app.get("/recipes/:recipeTitle", async(req,res)=>{
     try{
         const recipe = await readReceipeByTitle(req.params.recipeTitle)
         if(recipe){
@@ -90,11 +90,11 @@ async function receipesByAuthor(authorName){
     }
 }
 
-app.get("/reciepes/directory/:author", async(req,res)=>{
+app.get("/recipes/directory/:author", async(req,res)=>{
     try{
-        const receipe = await receipesByAuthor(req.params.author)
-        if(receipe.length !=0){
-            res.json(receipe)
+        const recipe = await receipesByAuthor(req.params.author)
+        if(recipe.length !=0){
+            res.json(recipe)
         }else{
             res.status(404).json({error:"Receipe Not Found."})
         }
@@ -114,7 +114,7 @@ async function recipesByLevel(difficultyLevel){
     }
 }
 
-app.get("/reciepes/level/:level", async(req,res)=>{
+app.get("/recipes/level/:level", async(req,res)=>{
     try{
         const recipes = await recipesByLevel(req.params.level)
         if(recipes.length !=0){
@@ -138,7 +138,7 @@ async function updateReceipe(receipeId,dataToUpdate){
     }
 }
 
-app.post("/recipes/:receipeId",async(req,res)=>{
+app.post("/recipes/:recipeId",async(req,res)=>{
     try{
         const updatedReceipe = await updateReceipe(req.params.receipeId,req.body);
         if(updatedReceipe){
@@ -162,10 +162,10 @@ async function updateReceipeByTitle(receipeTitle,dataToUpdate){
     }
 }
 
-app.post("/receipes/receipesByTitle/:receipeTitle",async(req,res)=>{
+app.post("/recipes/recipesByTitle/:recipeTitle",async(req,res)=>{
     try{
         const updatedReceipe = await updateReceipeByTitle(req.params.receipeTitle,req.body);
-        if(updatedReceipe){
+        if(updatedReceipe.length!=0){
             res.status(200).json({message:"Receipe updated Successfully."})
         }else{
             res.status(404).json({error:"Receipe does not exist."});
@@ -187,7 +187,7 @@ async function deleteReceipe(reciepeId){
     }
 }
 
-app.delete("/receipes/:recipeId",async(req,res)=>{
+app.delete("/recipes/:recipeId",async(req,res)=>{
     try{
         const deletedReceipe = await deleteReceipe(req.params.recipeId)
         if(deletedReceipe){
