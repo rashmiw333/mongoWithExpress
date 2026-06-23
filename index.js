@@ -165,7 +165,7 @@ async function updateReceipeByTitle(receipeTitle,dataToUpdate){
 app.post("/receipes/receipesByTitle/:receipeTitle",async(req,res)=>{
     try{
         const updatedReceipe = await updateReceipeByTitle(req.params.receipeTitle,req.body);
-        if(updatedReceipe.length!=0){
+        if(updatedReceipe){
             res.status(200).json({message:"Receipe updated Successfully."})
         }else{
             res.status(404).json({error:"Receipe does not exist."});
