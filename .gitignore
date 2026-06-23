@@ -1,8 +1,6 @@
 # Ignore the massive dependencies folder
 node_modules/
 
-# Ignore sensitive environment variables (passwords, DB strings)
-.env
 
 # Ignore system configuration files
 .DS_Store
