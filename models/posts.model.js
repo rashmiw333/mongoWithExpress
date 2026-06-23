@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
 const postSchema = new mongoose.Schema({
-    name: String,
-    email:String ,
+    title:String,
+    content:String ,
     author:{type: mongoose.Schema.Types.ObjectId, ref:"User"}
 });
 
