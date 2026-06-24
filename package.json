@@ -13,9 +13,19 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongodb": "^7.2.0",
-    "mongoose": "^9.6.3"
-  }
+    "mongoose": "^9.6.3",
+    "mongose": "^0.0.2-security"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rashmiw333/mongoWithExpress.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rashmiw333/mongoWithExpress/issues"
+  },
+  "homepage": "https://github.com/rashmiw333/mongoWithExpress#readme"
 }

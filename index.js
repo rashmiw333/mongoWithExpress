@@ -1,45 +1,40 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const {initializeDatabase} = require("./db/db.connect");
  const Movie = require("./models/movie.models");
 
  app.use(express.json());
+ app.use(cors());
 
 initializeDatabase();
 
-        const newMovie = {
-                title: "New Movie",
-                releaseYear: 2023,
-                genre: ["Drama"],
-                director: "Aditya Roy Chopra",
-                actors: ["Actor1","Actor2"],
-                language: "Hindi",
-                country: "India",
-                rating: 6.1,
-                plot: "A young Man and Young Woman fall in love on a trip",
-                awards: "IFA Filmfare Awards",
-                posterUrl: "https://example.com/new-poster1.jpg",
-                trailerUrl: "https://example.com/new-trailer1.mp4",
-
-        };
 
         async function createMovie(newMovie){
             try{
                 const movie = new Movie(newMovie);
                 const saveMovie = await movie.save();
-                console.log(saveMovie,"movie Data")
+                return saveMovie;
             }catch(error){
                 throw error;
             }
         }
+//post call to add movie
+        app.post("/movies",async(req,res)=>{
+            try{
+                const savedMovie = await createMovie(req.body);
+                res.status(201).json({message: "Movie added successfully.",movie:savedMovie})
+            }catch(error){
+                res.status(500).json({error:"Failed to add Movie"});
+            }
+        })
            
- //createMovie(newMovie);
 
  //find movie with titile
 
  async function readMovieByTitle(movieTitle){
     try{
-        const movie = await Movie.find({title: movieTitle});
+        const movie = await Movie.findOne({title: movieTitle});
         return movie;
     }catch(error){
         throw error;
@@ -50,7 +45,7 @@ initializeDatabase();
  app.get("/movies/:title",async(req,res)=>{
     try{
         const movie = await readMovieByTitle(req.params.title)
-        if(movie){
+        if(movie.length!=0){
         res.json(movie);
         }else{
             res.status(404).json({error:'Movie not Found'})
@@ -132,6 +127,50 @@ app.get("/movies/genre/:genreName",async(req,res)=>{
         res.status(500).json({error:"failed to fetch movies"});
     }
 })
+
+//Delete function amd API
+async function deleteMovie(movieId){
+    try{
+        const deletedMovie = await Movie.findByIdAndDelete(movieId)
+        return deletedMovie;
+    }catch(error){
+        console.log(error);
+    }
+}
+
+app.delete("/movies/:movieId", async(req,res)=>{
+    try{
+        const deletedMovie = await deleteMovie(req.params.movieId);
+        res.status(200).json({message:"Movie deleted Successfully."})
+    }catch(error){
+        res.status(500).json({error:"Failed to delete Movie"})
+    }
+});
+
+//update function and api
+
+async function updateMovie(movieId,dataToupdate){
+    try{
+    const updateMovie = await Movie.findByIdAndUpdate(movieId,dataToupdate,{new:true})
+    return updateMovie;
+    }catch(error){
+        console.log("Error Occurred while updating movie",error);
+    }
+}
+
+app.post("/movies/:movieId", async(req,res)=>{
+    try{
+        const updatedMovie = await updateMovie(req.params.movieId,req.body);
+        if(updatedMovie){
+            res.status(200).json({message:"Movie updated Successfully."})
+        }else{
+            res.status(404).json({error:"Movie not found."})
+        }
+    }catch(error){
+        res.status(500).json({error:"Failed to update Movie."})
+    }
+});
+
  const PORT = 3000
  app.listen(PORT,()=>{
     console.log(`Server is running on ${PORT}`);
