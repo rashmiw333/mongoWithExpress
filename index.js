@@ -1,10 +1,11 @@
 const express = require("express");
 const app = express();
-
+const cors = require("cors");
 const {initializeDatabase} = require("./db/db.connect");
 const Book = require("./models/book.models");
 
-app.use(express.json());
+ app.use(express.json());
+ app.use(cors());
 
 initializeDatabase();
 
