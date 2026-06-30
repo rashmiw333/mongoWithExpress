@@ -155,7 +155,7 @@ app.get("/hotels/category/:hotelCategory", async(req,res)=>{
 async function deleteHotel(hotelId){
     try{
         const deletedHotel = await Hotel.findByIdAndDelete(hotelId);
-        return deleteHotel;
+        return deletedHotel;
     }catch(error){
         console.log(error);
     }
